@@ -16,49 +16,90 @@ fn main() {
         "Reporting", 
         "IT",
         "Maintenance",
-        "Delivery"
+        "Shipping"
     ].to_vec();
     
+
     // Gen data
-    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[0], "Billy Bigsby");
-    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[0], "Marty Bigsby");
-    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[0], "Rodger Bigsby");
+    let dept_employees_sales: Vec <&str> = [
+        "Billy Bigsby", 
+        "Marty Bigsby", 
+        "Rodger Bigsby", 
+        "Bille Bigsby",
+    ].to_vec();
 
-    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[1], "Sally Bigsby");
-    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[1], "Carl Bigsby");
-    
-    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[2], "Briana Bigsby");
-    
-    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[3], "Todathan Bigsby");
-    
-    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[4], "Karly Bigsby");
-    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[4], "Carl Bigsby");
+    let dept_employees_reporting:  Vec <&str> = [
+        "Sally Bigsby", 
+        "Carl Bigsby",
+    ].to_vec();
 
-    // Print Data for Review
-    department_print(company_department_map.clone(), dept_index[0].to_string());
-    department_print(company_department_map.clone(), dept_index[1].to_string());
-    department_print(company_department_map.clone(), dept_index[2].to_string());
-    department_print(company_department_map.clone(), dept_index[3].to_string());
-    department_print(company_department_map.clone(), dept_index[4].to_string());
+    let dept_employees_it:  Vec <&str> = [
+        "Briana Bigsby",
+    ].to_vec();
+    
+    let dept_employees_maintenance:  Vec <&str> = [
+        "Todathan Bigsby",
+    ].to_vec();
+    
+    let dept_employees_shipping:  Vec <&str> = [
+        "Karly Bigsby", 
+        "Carly Bigsby",
+    ].to_vec();
+    
+    // store data
+    company_department_map = add_emp_batch_to_dept(company_department_map.clone(), dept_index.clone(), 0, dept_employees_sales);
+    company_department_map = add_emp_batch_to_dept(company_department_map.clone(), dept_index.clone(), 1, dept_employees_reporting);
+    company_department_map = add_emp_batch_to_dept(company_department_map.clone(), dept_index.clone(), 2, dept_employees_it);
+    company_department_map = add_emp_batch_to_dept(company_department_map.clone(), dept_index.clone(), 3, dept_employees_maintenance);
+    company_department_map = add_emp_batch_to_dept(company_department_map.clone(), dept_index.clone(), 4, dept_employees_shipping);
+
+    // Print data for Review    
+    all_department_print(company_department_map.clone(), dept_index);
 }
 
-fn add_emp_to_dept(mut hashmap: HashMap<String, Vec<String>>, dept: &str, employee: &str) -> HashMap<String, Vec<String>> {
+fn add_emp_batch_to_dept(mut company_department_map: HashMap<String, Vec<String>>, dept_index: Vec<&str>, dept: usize, employees: Vec<&str>) -> HashMap<String, Vec<String>> {
+    for employee in employees {
+        company_department_map = add_emp_to_dept(company_department_map.clone(), &dept_index[dept], &employee.to_string());
+    }
+
+    company_department_map
+}
+
+fn add_emp_to_dept(mut hashmap: HashMap<String, Vec<String>>, dept: &str, employee: &String) -> HashMap<String, Vec<String>> {
     hashmap.entry(dept.to_string()
         .to_string())
         .or_insert_with(Vec::new)
-        .push(format!("{employee}").to_string());
+        .push(format!("{employee}"));
 
     hashmap
 }
 
-fn department_print(hashmap: HashMap<String, Vec<String>>, department: String) {
-    for (departments, employees) in hashmap {
-        if departments == department {
-            println!("Company Department Map: {:?}", department);
-            println!("Department Employees: {:?}", employees);
+fn sort_employees(hashmap: HashMap<String, Vec<String>>, target_department: Vec<&str>, index: u64) -> Vec<String> {
+    let mut employees_sorted: Vec<String> = Vec::new();
+    
+    for (department, employees) in hashmap {
+        if department == target_department[index as usize] {
+            for employee in employees {
+                employees_sorted.push(employee.to_string());
+            }
         }
     }
+    
+    employees_sorted.sort_by(|a, b| a.cmp(&b));
+    employees_sorted
+}
 
+fn department_print(hashmap: HashMap<String, Vec<String>>, target_department: Vec<&str>, index: u64) {
+    println!("dept: {:?}", target_department[index as usize]);    
+    let sorted_employees = sort_employees(hashmap, target_department, index);
+    println!("sorted_employees: {:?}", sorted_employees);
+}
+
+fn all_department_print(hashmap: HashMap<String, Vec<String>>, target_department: Vec<&str>) {
+    for i in 0..target_department.len() {  
+        let index = i;
+        department_print(hashmap.clone(), target_department.clone(), index.try_into().unwrap());
+    }
 }
 
 // fn manual_entry(v: &mut Vec<String>) {
