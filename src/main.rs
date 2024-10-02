@@ -9,45 +9,56 @@ use std::collections::HashMap;
 fn main() {
     println!("Welcome to the Bigsby Department Manager Interface.");
     
-    let department_key: Vec <&str> = [
+    // Gen HashMap 
+    let mut company_department_map: HashMap<String, Vec<String>> = HashMap::new(); 
+    let dept_index: Vec <&str> = [
         "Sales", 
         "Reporting", 
         "IT",
         "Maintenance",
+        "Delivery"
     ].to_vec();
+    
+    // Gen data
+    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[0], "Billy Bigsby");
+    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[0], "Marty Bigsby");
+    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[0], "Rodger Bigsby");
 
-    println!("department_key: {:?}", department_key);
+    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[1], "Sally Bigsby");
+    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[1], "Carl Bigsby");
+    
+    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[2], "Briana Bigsby");
+    
+    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[3], "Todathan Bigsby");
+    
+    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[4], "Karly Bigsby");
+    company_department_map = add_emp_to_dept(company_department_map.clone(), dept_index[4], "Carl Bigsby");
 
-    // Gen HashMap and gen data
-    let mut company_department_map: HashMap<String, Vec<String>> = HashMap::new(); 
-    company_department_map.entry(department_key[0]
-        .to_string())
-        .or_insert_with(Vec::new)
-        .push("Carl Bigsby".to_string());
-    company_department_map.entry(department_key[0]
-        .to_string())
-        .or_insert_with(Vec::new)
-        .push("Brian Bigsby".to_string());
-    company_department_map.entry(department_key[1]
-        .to_string())
-        .or_insert_with(Vec::new)
-        .push("Todathan Bigsby".to_string());
-
-    // if let Some(sales_department) = company_department_map.get("Sales") {
-    //     println!("Sales Department: {:?}", sales_department);
-    // }
-
-    department_print(company_department_map, 0);
-
-    for department in company_department_map.iter() {
-        println!("Company Department Map: {:?}", department);
-    }
+    // Print Data for Review
+    department_print(company_department_map.clone(), dept_index[0].to_string());
+    department_print(company_department_map.clone(), dept_index[1].to_string());
+    department_print(company_department_map.clone(), dept_index[2].to_string());
+    department_print(company_department_map.clone(), dept_index[3].to_string());
+    department_print(company_department_map.clone(), dept_index[4].to_string());
 }
 
-fn department_print(hashmap: HashMap<String>, index: u64) {
-    if let Some(department) = hashmap.get(index) {
-        println!("Department: {:?}", department);
+fn add_emp_to_dept(mut hashmap: HashMap<String, Vec<String>>, dept: &str, employee: &str) -> HashMap<String, Vec<String>> {
+    hashmap.entry(dept.to_string()
+        .to_string())
+        .or_insert_with(Vec::new)
+        .push(format!("{employee}").to_string());
+
+    hashmap
+}
+
+fn department_print(hashmap: HashMap<String, Vec<String>>, department: String) {
+    for (departments, employees) in hashmap {
+        if departments == department {
+            println!("Company Department Map: {:?}", department);
+            println!("Department Employees: {:?}", employees);
+        }
     }
+
 }
 
 // fn manual_entry(v: &mut Vec<String>) {
