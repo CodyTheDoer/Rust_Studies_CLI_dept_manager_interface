@@ -22,9 +22,9 @@ fn main() {
     
     // Gen current employee data
     let dept_employees_sales: Vec <&str> = [
-        "Billy Bigsby", 
         "Marty Bigsby", 
         "Rodger Bigsby", 
+        "Billy Bigsby", 
         "Bille Bigsby",
     ].to_vec();
 
@@ -68,7 +68,28 @@ fn main() {
     // User interface
     match parsed_user_entry[0].trim() {
         "add" => {
-            println!("Add");
+            match parsed_user_entry[3].trim() {
+                "sales" => {
+                    let employee = parsed_user_entry[1].trim().to_owned() + " Bigsby";
+                    company_department_map = add_emp_to_dept(company_department_map.clone(), &dept_index[0], employee.to_string());
+                    println!("Add Sales");
+                }, 
+                "reporting" => {
+                    println!("Add Reporting");
+                }, 
+                "it" => {
+                    println!("Add IT");
+                }, 
+                "maintenance" => {
+                    println!("Add Maintenance");
+                }, 
+                "shipping" => {
+                    println!("Add Shipping");
+                },
+                _ => {
+                    println!("Add Failed");
+                }     
+            }
         },
         "review" => {
             if parsed_user_entry[1].trim() == "all" {
@@ -82,8 +103,8 @@ fn main() {
         }
     }
 
-    // // Print data for Review    
-    // all_department_print(company_department_map.clone(), dept_index);
+    // Print data for Review    
+    all_department_print(company_department_map.clone(), dept_index);
 }
 
 fn split_string_on_space_return_multi_part_vec(s: String) -> Vec<String> {
@@ -103,11 +124,21 @@ fn add_emp_batch_to_dept(mut company_department_map: HashMap<String, Vec<String>
     company_department_map
 }
 
+pub fn capitalize(name: &str) -> String {
+    let mut chars = name.chars();
+    match chars.next() {
+        None => String::new(),
+        Some(first_char) => first_char.to_uppercase().collect::<String>() + chars.as_str(),
+    }
+}
+
 fn add_emp_to_dept(mut company_department_map: HashMap<String, Vec<String>>, dept: &str, employee: String) -> HashMap<String, Vec<String>> {
+    let employee_capitalized = capitalize(&employee);
+
     company_department_map.entry(dept.to_string()
         .to_string())
         .or_insert_with(Vec::new)
-        .push(format!("{employee}"));
+        .push(format!("{employee_capitalized}"));
 
     company_department_map
 }
