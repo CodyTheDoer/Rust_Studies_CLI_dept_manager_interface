@@ -56,15 +56,56 @@ fn main() {
     println!("What would you like to do?");
     println!("Example Actions: ");
     println!("   Add 'Employee' to 'Department'");
-    println!("   Review employees in 'Department'");
+    println!("   Review 'Department'");
     println!("   Review all employees");
 
     let mut user_entry = Vec::new();
     manual_entry(&mut user_entry);
 
-    let parsed_user_entry = split_string_on_space_return_multi_part_vec(user_entry[0].clone());
-    println!("parsed_user_entry: {:?}", parsed_user_entry);    
+    company_department_map = user_interchange(company_department_map.clone(), dept_index.clone(), &user_entry.clone());
+
+    while main_again() == true {
+        println!("What would you like to do?");
+        println!("Example Actions: ");
+        println!("   Add 'Employee' to 'Department'");
+        println!("   Review 'Department'");
+        println!("   Review all employees");
     
+        let mut user_entry = Vec::new();
+        manual_entry(&mut user_entry);
+    
+        company_department_map = user_interchange(company_department_map.clone(), dept_index.clone(), &user_entry.clone());
+    }
+}
+
+fn main_again() -> bool {
+    println!("Would you like to do anything else? (Y/N)");
+
+    let mut continue_yn = String::new();
+    io::stdin()
+        .read_line(&mut continue_yn)
+        .expect("Failed to read line");
+
+    match continue_yn.trim() {
+        "y" | "Y" => {
+            let bool = true;
+            bool
+        },
+        "n" | "N" => {
+            println!("Exiting...");
+            let bool = false;
+            bool
+        },
+        _ => {
+            println!("Failure: Bad Input, exiting...");
+            let bool = false;
+            bool
+        },
+    }
+}
+
+fn user_interchange(mut company_department_map: HashMap<String, Vec<String>>, dept_index: Vec<&str>, user_entry: &Vec<String>) -> HashMap<String, Vec<String>> {
+    let parsed_user_entry = split_string_on_space_return_multi_part_vec(user_entry[0].clone());
     // User interface
     match parsed_user_entry[0].trim() {
         "add" => {
@@ -72,39 +113,70 @@ fn main() {
                 "sales" => {
                     let employee = parsed_user_entry[1].trim().to_owned() + " Bigsby";
                     company_department_map = add_emp_to_dept(company_department_map.clone(), &dept_index[0], employee.to_string());
-                    println!("Add Sales");
+                    println!("Added {:?} to Sales Department", capitalize(parsed_user_entry[1].trim()) + " Bigsby");
                 }, 
                 "reporting" => {
-                    println!("Add Reporting");
+                    let employee = parsed_user_entry[1].trim().to_owned() + " Bigsby";
+                    company_department_map = add_emp_to_dept(company_department_map.clone(), &dept_index[1], employee.to_string());
+                    println!("Added {:?} to Reporting Department", capitalize(parsed_user_entry[1].trim()) + " Bigsby");
                 }, 
                 "it" => {
-                    println!("Add IT");
+                    let employee = parsed_user_entry[1].trim().to_owned() + " Bigsby";
+                    company_department_map = add_emp_to_dept(company_department_map.clone(), &dept_index[2], employee.to_string());
+                    println!("Added {:?} to IT Department", capitalize(parsed_user_entry[1].trim()) + " Bigsby");
                 }, 
                 "maintenance" => {
-                    println!("Add Maintenance");
+                    let employee = parsed_user_entry[1].trim().to_owned() + " Bigsby";
+                    company_department_map = add_emp_to_dept(company_department_map.clone(), &dept_index[3], employee.to_string());
+                    println!("Added {:?} to Maintenance Department", capitalize(parsed_user_entry[1].trim()) + " Bigsby");
                 }, 
                 "shipping" => {
-                    println!("Add Shipping");
+                    let employee = parsed_user_entry[1].trim().to_owned() + " Bigsby";
+                    company_department_map = add_emp_to_dept(company_department_map.clone(), &dept_index[4], employee.to_string());
+                    println!("Added {:?} to Shipping Department", capitalize(parsed_user_entry[1].trim()) + " Bigsby");
                 },
                 _ => {
-                    println!("Add Failed");
+                    println!("Addition Failed");
                 }     
             }
-        },
-        "review" => {
-            if parsed_user_entry[1].trim() == "all" {
-                println!("Review all");
-            } else {
-                println!("Review");
+        }, 
+        "review" => { // Print data for Review   
+            match parsed_user_entry[1].trim() {
+                "all" => {
+                    println!("Review all:");
+                    all_department_print(company_department_map.clone(), dept_index.clone());    
+                },
+                "sales" => {
+                    println!("Review Sales Dept:");
+                    department_print(company_department_map.clone(), dept_index.clone(), 0);
+                },
+                "reporting" => {
+                    println!("Review Reporting Dept:");
+                    department_print(company_department_map.clone(), dept_index.clone(), 1);
+                },
+                "it" => {
+                    println!("Review IT Dept:");
+                    department_print(company_department_map.clone(), dept_index.clone(), 2);
+                },
+                "maintenance" => {
+                    println!("Review maintenance Dept:");
+                    department_print(company_department_map.clone(), dept_index.clone(), 3);
+                },
+                "shipping" => {
+                    println!("Review shipping Dept:");
+                    department_print(company_department_map.clone(), dept_index.clone(), 4);
+                },
+                _ => {
+                    println!("Review Failed:");
+                }
             }
         },
-        &_ => {
-            println!("Failed");
-        }
+        _ => {
+            println!("User interchange failed");
+        }  
     }
 
-    // Print data for Review    
-    all_department_print(company_department_map.clone(), dept_index);
+    company_department_map
 }
 
 fn split_string_on_space_return_multi_part_vec(s: String) -> Vec<String> {
@@ -124,7 +196,7 @@ fn add_emp_batch_to_dept(mut company_department_map: HashMap<String, Vec<String>
     company_department_map
 }
 
-pub fn capitalize(name: &str) -> String {
+fn capitalize(name: &str) -> String {
     let mut chars = name.chars();
     match chars.next() {
         None => String::new(),
